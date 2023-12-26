@@ -49,24 +49,30 @@ def tokenize_dialog(dialog, tokenizer):
 
 
 def get_vietnamese_medicine_qa(dataset_config, tokenizer, split):
-    dataset = datasets.load_dataset("tmnam20/VietnameseMedicineQA", split=split)
-
+    dataset = datasets.load_dataset(
+        "tmnam20/VietnameseMedicineQA", split=split, download_mode="force_redownload"
+    )
 
     dataset = dataset.map(
-        lambda sample: {"dialog": [
-            {
-                "role": "user",
-                "content": sample["question"],
-            },
-            {
-                "role": "assistant",
-                "content": sample["answer"],
-            },
-        ]},
+        lambda sample: {
+            "dialog": [
+                {
+                    "role": "user",
+                    "content": sample["question"],
+                },
+                {
+                    "role": "assistant",
+                    "content": sample["answer"],
+                },
+            ]
+        },
         batched=False,
         remove_columns=list(dataset.features),
     )
 
-    dataset = dataset.map(lambda x: tokenize_dialog(x["dialog"], tokenizer), remove_columns=list(dataset.features))
+    dataset = dataset.map(
+        lambda x: tokenize_dialog(x["dialog"], tokenizer),
+        remove_columns=list(dataset.features),
+    )
 
     return dataset
