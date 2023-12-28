@@ -49,9 +49,14 @@ def tokenize_dialog(dialog, tokenizer):
 
 
 def get_vietnamese_medicine_qa(dataset_config, tokenizer, split):
+    # dataset = datasets.load_dataset(
+    #     "tmnam20/VietnameseMedicineQA", split=split, download_mode="force_redownload"
+    # )
     dataset = datasets.load_dataset(
-        "tmnam20/VietnameseMedicineQA", split=split, download_mode="force_redownload"
+        "json",
+        data_files=dataset_config.train_files if split == "train" else dataset_config.validation_files,
     )
+    dataset = dataset['train']
 
     dataset = dataset.map(
         lambda sample: {
